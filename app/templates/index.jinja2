@@ -1,0 +1,121 @@
+{% extends "base.jinja2" %}
+
+{% block body %}
+
+<div x-data="mediaDrop">
+    <div class="media-drop" @drop="dropHandler" @dragover="allowDrop">
+        <div class="cancel" x-show="hasMedia">
+            <div>
+                <template x-for="media in ingestedMedia">
+                    <p x-text="media.name"></p>
+                </template>
+            </div>
+            <div>
+                <button @click="clearFiles">×</button>
+            </div>
+        </div>
+
+        <div x-show="!(hasMedia)">
+            <h3>Drop images</h3>
+        </div>
+    </div>
+
+    <button @click="uploadMedia">Upload image</button>
+</div>
+
+
+<script>
+    const validFileTypes = [
+        "image/png",
+        "image/jpeg",
+    ]
+
+
+    document.addEventListener("alpine:init", () => {
+        Alpine.data('mediaDrop', () => ({
+            hasMedia: false,
+            ingestedMedia: [],
+            dropHandler(event) {
+                event.preventDefault();
+
+                let files = [];
+
+                if (event.dataTransfer.items) {
+                    [...event.dataTransfer.items].forEach((item, i) => {
+                        if (item.kind === "file") {
+                            files.push(item.getAsFile());
+                        }
+                    })
+                } else {
+                    files = data.dataTransfer.files
+                }
+
+                this.ingestFiles(files);
+            },
+            allowDrop(event) {
+                event.preventDefault();
+            },
+            clearFiles() {
+                hasMedia = false;
+                this.files = [];
+            },
+            ingestFiles(files) {
+
+                // Validate
+                files.forEach((item) => {
+                    if (!validFileTypes.includes(item.type)) {
+                        alert(`Unsupported file type: ${item.type}`)
+                    }
+                })
+
+                this.hasMedia = true;
+                this.ingestedMedia = files
+            },
+            uploadMedia() {
+                const formData = new FormData();
+
+                this.ingestedMedia.forEach((media, i) => {
+                    formData.append(`files`, media, media.name);
+                });
+
+                fetch("http://localhost:5000/media", {
+                    method: "POST",
+                    body: formData,
+                }).then((res) => {
+                    return res.json();
+                }).then((json) => {
+                    console.log(json)
+                })
+                console.log("uploaded")
+
+            }
+        }));
+
+    })
+
+</script>
+
+<style>
+    .media-drop {
+        width: 75%;
+        height: 40rem;
+
+        display: flex;
+        justify-content: center;
+
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 2rem;
+        box-shadow: inset 0 0.25rem 10px 0;
+    }
+
+    .media-drop.has-media {
+        background-color: rgb(109, 145, 97)
+    }
+
+    .media-drop>.cancel {
+        display: flex;
+        justify-content: flex-end;
+    }
+</style>
+
+{% endblock %}
