@@ -1,9 +1,11 @@
 FROM python:3.12-alpine
 
-# Install FFMPEG
+WORKDIR /fumnail/app
+
 RUN apk update
 RUN apk upgrade
-RUN apk add --no-cache ffmpeg
+
+RUN apk add --no-cache nginx
 
 # Install postgresql deps
 RUN apk add --no-cache \
@@ -15,11 +17,10 @@ RUN apk add --no-cache \
     postgresql-libs
 
 
-WORKDIR /fumnail/worker
-
 COPY requirements.txt /tmp/requirements.txt
 RUN pip3 install -r /tmp/requirements.txt
 
-COPY . .
+ENV FLASK_DEBUG=1
 
-CMD ["celery", "worker"]
+
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]

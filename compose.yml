@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes: # Means data is persistent
+      - ./local/postgresql/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=wollisngrumit
+    healthcheck: # Used to prevent app launching before posgres is running
+      test: "pg_isready -U postgres"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis: # Redis for Celery message queue
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./local/redis/data:/data
+
+  app:
+    build:
+      dockerfile: ./docker/app/Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - ./uploads:/share/uploads
+    env_file:
+      - .env
+    depends_on: # Don't launch unless db is running
+      postgres:
+        condition: service_healthy
+
+  worker:
+    build:
+      dockerfile: ./docker/worker/Dockerfile
+    volumes:
+      - ./uploads:/share/uploads
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres

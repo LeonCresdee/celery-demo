@@ -78,7 +78,7 @@
                     formData.append(`files`, media, media.name);
                 });
 
-                fetch("http://localhost:5000/media", {
+                fetch(`${"/media"}`, {
                     method: "POST",
                     body: formData,
                 }).then((res) => {

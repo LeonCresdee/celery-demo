@@ -20,6 +20,6 @@ WORKDIR /fumnail/worker
 COPY requirements.txt /tmp/requirements.txt
 RUN pip3 install -r /tmp/requirements.txt
 
-COPY . .
+# COPY . .
 
-CMD ["celery", "worker"]
+CMD ["celery", "worker", "--loglevel=DEBUG"]

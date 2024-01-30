@@ -6,6 +6,7 @@ from flask import Flask
 
 
 def create_app():
+    # print(f"args: {args}")
     app = Flask(__name__)
     app.config.from_object(Config)
     app.register_blueprint(root)  #  Register routes

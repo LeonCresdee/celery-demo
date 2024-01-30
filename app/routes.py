@@ -1,6 +1,6 @@
 from app.extensions import db
 from app.models import Media, Job
-from worker import make_image
+from worker import tasks
 from flask import Blueprint, render_template, request
 from flask import current_app as app
 from werkzeug.utils import secure_filename
@@ -44,9 +44,9 @@ def upload_media():
         db.session.add(Media(name=filename))
 
         # Create images
-        make_image.delay("s", filename)
-        make_image.delay("m", filename)
-        make_image.delay("l", filename)
+        tasks.make_image.delay("s", filename)
+        tasks.make_image.delay("m", filename)
+        tasks.make_image.delay("l", filename)
 
         db.session.commit()
 
