@@ -7,12 +7,11 @@ Demo app for Celery, Flask & Docker
 ### Dev
 
 ```bash
-docker compose -f ./compose.yml -f ./compose.dev.yml up -d
+docker compose -f ./compose.yml -f ./compose.dev.yml up --force-recreate --build -d
 ```
 
 ### Production
 
 ```bash
-docker compose build --no-cache
-docker compose up -d
+docker compose up --force-recreate --build -d
 ```

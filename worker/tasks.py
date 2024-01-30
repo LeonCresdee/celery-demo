@@ -17,7 +17,7 @@ def make_image(size, filename):
     input_path = os.path.join(Config.UPLOAD_FOLDER, name, filename)
 
     output_path = os.path.join(
-        celery.conf.get("UPLOAD_FOLDER"),
+        Config.UPLOAD_FOLDER,
         filename.split(".")[0],
         f"{name}_{size}.{extension}",
     )

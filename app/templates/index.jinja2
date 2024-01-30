@@ -57,7 +57,7 @@
             },
             clearFiles() {
                 hasMedia = false;
-                this.files = [];
+                this.ingestFiles = [];
             },
             ingestFiles(files) {
 
@@ -85,8 +85,19 @@
                     return res.json();
                 }).then((json) => {
                     console.log(json)
+                    if ("error" in json) {
+                        alert(json.error);
+                    } else {
+                        alert("Media uploaded!");
+                    }
+                    this.hasMedia = false;
+                    this.ingestedMedia = [];
+                }).catch((err) => {
+                    console.log(err);
+                    this.hadMedia = false;
+                    this.ingestedMedia = [];
+                    alert("Media upload failed :(");
                 })
-                console.log("uploaded")
 
             }
         }));

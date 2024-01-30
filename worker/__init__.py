@@ -1,7 +1,17 @@
-from . import tasks
-from celery import Celery
+from flask import Flask
+from celery import Celery, Task
 from config import Config
 
-celery = Celery(__name__)
-celery.config_from_object(Config.Worker)
-celery.set_default()
+
+# Application factory for celery
+def init_celery(app: Flask) -> Celery:
+    class ContextualTask(Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery = Celery(app.name, task_cls=ContextualTask)
+    celery.Task
+    celery.config_from_object(Config.Worker)
+    app.extensions["celery"] = celery
+    return celery

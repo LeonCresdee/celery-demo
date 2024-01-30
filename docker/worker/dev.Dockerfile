@@ -22,4 +22,4 @@ RUN pip3 install -r /tmp/requirements.txt
 
 # COPY . .
 
-CMD ["celery", "worker", "--loglevel=DEBUG"]
+CMD ["celery", "-A", "worker.run.celery", "worker", "--loglevel=DEBUG"]
