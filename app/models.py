@@ -26,5 +26,9 @@ class Media(db.Model):
     # Relationships
     jobs: Mapped[List[Job]] = relationship("Job", back_populates="media")
 
-    def thumbnail(size: str = "s"):
-        pass
+    def thumbnail(self, size: str = "s"):
+        filename, extension = self.name.split(".", 1)
+
+        return f"""
+        <img src="/uploads/{filename}/{filename}_{size}.{extension}"></img>
+        """
